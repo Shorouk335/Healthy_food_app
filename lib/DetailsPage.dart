@@ -1,35 +1,33 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:healthy_food_ui/Model/Details_Data.dart';
+import 'package:healthy_food_ui/Widgets/Details_Conwidget.dart';
+import 'package:healthy_food_ui/Widgets/Send_Request.dart';
 
 class DetailsPage extends StatefulWidget {
-  var index;
+  String? ImgName;
   String? name;
-  var salary;
-
-  DetailsPage({required this.index, required this.name, required this.salary});
+  double salary ;
+  DetailsPage({required this.ImgName, required this.name, required this.salary});
 
   @override
-  _DetailsPageState createState() => _DetailsPageState();
+  DetailsPageState createState() => DetailsPageState(final_salary: this.salary);
 }
 
-class _DetailsPageState extends State<DetailsPage> {
-  // List num = [0,0,0,0,0];
-  // List ContainerColor = [Colors.white,Colors.white,Colors.white,Colors.white,Colors.white];
-  // List TextColor = [Colors.black45,Colors.black45,Colors.black45,Colors.black45,Colors.black45];
-  //  Change( dynamic index){
-  //    setState(() {
-  //      if (this.num[index] == 0){
-  //        this.ContainerColor[index] = Colors.greenAccent;
-  //        this.TextColor[index] = Colors.white ;
-  //        num[index]++;
-  //      }
-  //      else {
-  //        this.ContainerColor[index] = Colors.white;
-  //        this.TextColor[index] = Colors.black ;
-  //        num[index]--;
-  //      }
-  //    });
-  // }
+class DetailsPageState extends State<DetailsPage> {
+  var num_of_meal = 1;
+
+  double final_salary;
+
+  DetailsPageState({required this.final_salary});
+
+  List DetailsList = [
+    DetailsData(name: "Salad", salary: 15.0 ,Colo: Colors.white ,clic: 0 ,Textcolor: Colors.black54),
+    DetailsData(name: "Coca Cola", salary: 10.0,Colo: Colors.white,clic: 0,Textcolor: Colors.black54),
+    DetailsData(name: "Nuts", salary: 20.0,Colo: Colors.white,clic: 0,Textcolor: Colors.black54),
+    DetailsData(name: "Entrees", salary: 25.0,Colo: Colors.white,clic: 0,Textcolor: Colors.black54),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,7 +129,6 @@ class _DetailsPageState extends State<DetailsPage> {
                             Container(
                               width: 130,
                               height: 50,
-                              // padding: EdgeInsets.only(bottom: 15.0),
                               decoration: BoxDecoration(
                                 color: Colors.greenAccent,
                                 borderRadius: BorderRadiusDirectional.all(
@@ -141,6 +138,15 @@ class _DetailsPageState extends State<DetailsPage> {
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: [
                                   InkWell(
+                                    onTap: (){
+                                      setState(() {
+                                        if (num_of_meal != 0) {
+                                          num_of_meal--;
+                                          final_salary =
+                                              this.widget.salary * num_of_meal;
+                                        }
+                                      });
+                                    },
                                     child:Text("-",
                                     style: TextStyle(
                                       color: Colors.white,
@@ -148,11 +154,17 @@ class _DetailsPageState extends State<DetailsPage> {
                                     ),)
                                   ),
                                   Text(
-                                    "2",
+                                    "$num_of_meal",
                                     style: TextStyle(
                                         color: Colors.white, fontSize: 30.0),
                                   ),
                                   InkWell(
+                                    onTap: (){
+                                      setState(() {
+                                        num_of_meal++;
+                                        final_salary =this.widget.salary *num_of_meal;
+                                      });
+                                    },
                                     child: Container(
                                       width: 30,
                                       height: 30,
@@ -179,40 +191,72 @@ class _DetailsPageState extends State<DetailsPage> {
                         child: Padding(
                           padding: const EdgeInsets.only(top: 10.0,bottom: 10.0,right: 20.0,),
                           child: Container(
-                            child: ListView(
-                              scrollDirection: Axis.horizontal,
-                              children: [
-                                ContW(),
-                                ContW(),
-                                ContW(),
-                                ContW(),
-                                ContW(),
+                           child: ListView.builder(
+                             scrollDirection: Axis.horizontal,
+                               itemCount: DetailsList.length,
+                               itemBuilder: (context ,index) {
+                               return InkWell(
+                                 onTap: (){
+                                   setState(() {
+                                     if ( this.DetailsList[index].clic == 0){
+                                       this.DetailsList[index].clic++;
+                                       this.DetailsList[index].Colo = Colors.greenAccent;
+                                       this.DetailsList[index].Textcolor = Colors.white;
+                                       this.final_salary+= DetailsList[index].salary;
+                                     }
+                                     else {
+                                       this.DetailsList[index].clic--;
+                                       this.final_salary-= DetailsList[index].salary ;
+                                       this.DetailsList[index].Colo = Colors.white;
+                                       this.DetailsList[index].Textcolor = Colors.black54;
+                                     }
 
-                              ],
-                            ),
+                                   });
+                                 },
+                                 child: DetailsConWidget(
+                                   name: DetailsList[index].name,
+                                     salary: DetailsList[index].salary ,
+                                   ConColor: DetailsList[index].Colo,
+                                 TextColor: DetailsList[index].Textcolor,),
+                               );
+
+                               }),
                           ),
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(5.0),
-                        child: Container(
-                            width: double.infinity,
-                            height: MediaQuery.of(context).size.height/10,
-                            decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.only(topLeft: Radius.circular(30.0),topRight: Radius.circular(30.0),
-                                bottomLeft: Radius.circular(60.0) ,bottomRight: Radius.circular(60.0)
-                              )
+                        child: InkWell(
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context){
+                              return SendRequest();
+                            }));
+                          },
+                          child: Container(
+                              width: double.infinity,
+                              height: MediaQuery.of(context).size.height/10,
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.only(topLeft: Radius.circular(30.0),topRight: Radius.circular(30.0),
+                                  bottomLeft: Radius.circular(60.0) ,bottomRight: Radius.circular(60.0)
+                                )
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon (Icons.double_arrow ,color: Colors.grey,size: 30,),
+                                  SizedBox(width: 10,),
+                                  Text(
+                                    "\$${final_salary}",style: TextStyle(
+                                      color: Colors.white.withOpacity(0.5),
+                                      fontSize: 30.0
+                                  ),
+                                  ),
+                                ],
+
+                              ) ,
                             ),
-                            child: Center(
-                              child: Text(
-                                  "\$${this.widget.salary}",style: TextStyle(
-                                color: Colors.white.withOpacity(0.5),
-                                fontSize: 30.0
-                              ),
-                              ),
-                            ) ,
-                          ),
+                        ),
                       ),
                       SizedBox(height: 80,),
                     ],
@@ -222,12 +266,12 @@ class _DetailsPageState extends State<DetailsPage> {
               top: 10,
               left: MediaQuery.of(context).size.width / 5,
               child: Hero(
-                  tag: "plate${widget.index}",
+                  tag: "${this.widget.ImgName}",
                   child: Container(
                       decoration: BoxDecoration(
                           image: DecorationImage(
                               image:
-                                  AssetImage("images/plate${widget.index}.png"),
+                                  AssetImage("images/${this.widget.ImgName}.png"),
                               fit: BoxFit.cover)),
                       height: 250.0,
                       width: 250.0))),
@@ -235,30 +279,5 @@ class _DetailsPageState extends State<DetailsPage> {
       ),
     );
   }
-  Widget ContW (){
-    return Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: Container(
-        width: MediaQuery.of(context).size.width/3.5,
-        decoration: BoxDecoration(
-          color: Colors.white,
-         border: Border.all(color: Colors.grey ,width: 1),
-          borderRadius: BorderRadius.all(Radius.circular(25.0)),
-        ),
-        child: Column (
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Text("CALORIES" ,style: TextStyle(
-              color: Colors.black45,
-              fontSize: 15.0
-            ),),
-            Text("A, 52",style: TextStyle(
-              color: Colors.black45,
-              fontSize: 15.0
-            ),),
-          ],
-        ) ,
-      ),
-    );
-  }
+
 }
